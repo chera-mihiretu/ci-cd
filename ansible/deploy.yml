@@ -1,0 +1,60 @@
+---
+- name: Deploy DevOps Demo App
+  hosts: webservers
+  become: true
+
+  vars:
+    project_dir: /opt/devops-demo
+    repo_url: https://github.com/your-org/devops-demo.git
+
+  tasks:
+    - name: Ensure Docker is installed
+      apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+        state: present
+        update_cache: true
+
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Clone or update the project repository
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ project_dir }}"
+        version: main
+        force: true
+
+    - name: Build and start containers
+      command: docker compose up -d --build
+      args:
+        chdir: "{{ project_dir }}"
+
+    - name: Wait for app to be healthy
+      uri:
+        url: http://localhost:3000/health
+        status_code: 200
+      register: health_check
+      retries: 10
+      delay: 3
+      until: health_check.status == 200
+
+    - name: Verify Prometheus is reachable
+      uri:
+        url: http://localhost:9090/-/ready
+        status_code: 200
+      register: prom_check
+      retries: 5
+      delay: 3
+      until: prom_check.status == 200
+
+    - name: Display deployment status
+      debug:
+        msg: >
+          Deployment complete!
+          App: http://localhost:3000
+          Prometheus: http://localhost:9090
