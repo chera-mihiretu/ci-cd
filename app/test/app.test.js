@@ -36,7 +36,7 @@ describe("DevOps Demo App", () => {
   it("GET /health returns ok status", async () => {
     await serverReady;
     const res = await request("/health");
-    assert.strictEqual(res.status, 201);
+    assert.strictEqual(res.status, 200);
     const data = JSON.parse(res.body);
     assert.strictEqual(data.status, "ok");
   });
