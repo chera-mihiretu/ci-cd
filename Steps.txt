@@ -1,0 +1,26 @@
+Jenkins CI/CD Pipeline
+
+This file runs automatically on every Git push.
+When on Checkout:
+Stage 1: Checkout - pulls latest code from Git
+When on Install:
+Stage 2: Install - runs npm ci to install dependencies
+When on Test:
+Stage 3: Test - runs automated tests
+
+If any test fails, the pipeline stops here. Broken code never deploys.
+When on Build Docker Image:
+Stage 4: Build - packages the app into a Docker container image
+When on Deploy:
+Stage 5: Deploy - starts the app using Docker Compose
+
+This is CI/CD: push to production, fully automated.
+
+
+
+docker run -d \
+  --name jenkins \
+  -p 8080:8080 -p 50000:50000 \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  jenkins/jenkins:lts
