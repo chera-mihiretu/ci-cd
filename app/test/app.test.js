@@ -28,7 +28,7 @@ describe("DevOps Demo App", () => {
   it("GET / returns welcome message", async () => {
     await serverReady;
     const res = await request("/");
-    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.status, 201);
     const data = JSON.parse(res.body);
     assert.strictEqual(data.message, "Welcome to the DevOps Demo App!");
   });
